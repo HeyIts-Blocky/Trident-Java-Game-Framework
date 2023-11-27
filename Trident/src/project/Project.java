@@ -28,6 +28,8 @@ public class Project {
         dir.mkdirs();
         dir = new File("data/projects/" + name + "/src/ent");
         dir.mkdirs();
+        dir = new File("data/projects/" + name + "/src/custom");
+        dir.mkdirs();
         dir = new File("data/projects/" + name + "/lib");
         dir.mkdirs();
         dir = new File("data/projects/" + name + "/data/images/player");
@@ -138,7 +140,7 @@ public class Project {
             writer.println("            }");
             writer.println("        }");
             writer.println("");
-            writer.println("        ArrayList<ArrayList<Entity>> splitEnt = Trident.player.camera.splitEntities(Trident.tridArrToEntArr(Trident.currentScene.entities));");
+            writer.println("        ArrayList<ArrayList<Entity>> splitEnt = Trident.player.camera.splitEntities(Trident.tridArrToEntArr(Trident.currentScene.entities), 16);");
             writer.println("        if(!Trident.engineDraw) Trident.player.camera.render(g, splitEnt.get(0));");
             writer.println("        if(Trident.drawPlayer){");
             writer.println("            Trident.player.render(this, g, frameManager.WIDTH / 2 - 16, frameManager.HEIGHT / 2 - 16);");
@@ -181,7 +183,9 @@ public class Project {
             writer.println("        }");
             writer.println("");
             writer.println("        public void onMousePressed(int mb, Point mousePos){");
-            writer.println("            Inputs.mousePressed(mb, mousePos);");
+            writer.println("            mousePos = frameManager.getMousePos(panel, mousePos);");
+            writer.println("            Position worldPos = Trident.player.camera.mouseToPos(mousePos);");
+            writer.println("            Inputs.mousePressed(mb, mousePos, worldPos);");
             writer.println("        }");
             writer.println("    }");
             writer.println("");
@@ -195,7 +199,8 @@ public class Project {
             writer.println("            if(!Trident.noclip) Trident.player.updateWithCollision(server.getElapsedTime(), Trident.currentScene.getCollision());");
             writer.println("            else Trident.player.update(server.getElapsedTime());");
             writer.println("");
-            writer.println("            for(TridEntity e: Trident.currentScene.entities){");
+            writer.println("            for(int i = 0; i < Trident.getEntities().size(); i++){");
+            writer.println("                TridEntity e = Trident.getEntities().get(i);");
             writer.println("                e.update(server.getElapsedTime());");
             writer.println("                if(e instanceof Trigger){");
             writer.println("                    Trigger trig = (Trigger)e;");
@@ -213,7 +218,6 @@ public class Project {
             writer.println("}");
             writer.close();
         }catch(Exception e){}
-        
         try{
             File file = new File("data/projects/" + name + "/src/trident/Scene.java");
             file.createNewFile();
@@ -408,6 +412,9 @@ public class Project {
             writer.println("    public static void setDefaultScene(String s){");
             writer.println("        defaultScene = s;");
             writer.println("    }");
+            writer.println("    public static void destroy(TridEntity object){");
+            writer.println("        getEntities().remove(object);");
+            writer.println("    }");
             writer.println("");
             writer.println("    // Getting methods");
             writer.println("    public static double getPlrSpeed(){");
@@ -435,6 +442,12 @@ public class Project {
             writer.println("            newEntities.add((TridEntity)e);");
             writer.println("        }");
             writer.println("        return newEntities;");
+            writer.println("    }");
+            writer.println("    public static ArrayList<TridEntity> getEntities(){");
+            writer.println("        return currentScene.entities;");
+            writer.println("    }");
+            writer.println("    public static ArrayList<Rectangle> getCollision(){");
+            writer.println("        return currentScene.getCollision();");
             writer.println("    }");
             writer.println("");
             writer.println("}");
@@ -486,16 +499,12 @@ public class Project {
             writer.println("    public final Rectangle getCollision(){");
             writer.println("        return new Rectangle((int)position.x - (collision.width / 2), (int)position.y - (collision.height / 2), collision.width, collision.height);");
             writer.println("    }");
-            writer.println("");
-            writer.println("    public void gameStart(){");
-            writer.println("        ");
-            writer.println("    }");
             writer.println("    ");
             writer.println("    public void render(Graphics g, JPanel panel, int x, int y){");
             writer.println("");
             writer.println("    }");
             writer.println("");
-            writer.println("    public void engineRender(Graphics g, JPanel panel, int x, int y){");
+            writer.println("    protected void engineRender(Graphics g, JPanel panel, int x, int y){");
             writer.println("        if(HASCOLLISION){");
             writer.println("            g.setColor(Color.red);");
             writer.println("            g.drawRect(x - getCollision().width / 2, y - getCollision().height / 2, getCollision().width, getCollision().height);");
@@ -511,6 +520,7 @@ public class Project {
             writer.println("}");
             writer.close();
         }catch(Exception e){}
+        
         
         // src/trident/ent
         try{
@@ -751,19 +761,9 @@ public class Project {
             writer.println("        return new ExampleEntity(pos);");
             writer.println("    }");
             writer.println("");
-            writer.println("    // Runs when the game begins, use this over constructor in most cases other than assigning image variables");
-            writer.println("    public void gameStart(){");
-            writer.println("");
-            writer.println("    }");
-            writer.println("");
             writer.println("    // Render while in game");
             writer.println("    public void render(Graphics g, JPanel panel, int x, int y){");
             writer.println("");
-            writer.println("    }");
-            writer.println("");
-            writer.println("    // Render while in engine. Tip: call the normal render first to still render it normally, then overlay something on top");
-            writer.println("    public void engineRender(Graphics g, JPanel panel, int x, int y){");
-            writer.println("        super.engineRender(g, panel, x, y);");
             writer.println("    }");
             writer.println("");
             writer.println("    // Runs every tick while the game is running");
@@ -783,6 +783,7 @@ public class Project {
             writer.println("");
             writer.println("import java.awt.*;");
             writer.println("import java.awt.event.*;");
+            writer.println("import blib.util.*;");
             writer.println("");
             writer.println("import trident.*;");
             writer.println("public class Inputs {");
@@ -803,12 +804,12 @@ public class Project {
             writer.println("        }");
             writer.println("    }");
             writer.println("");
-            writer.println("    public static void mousePressed(int mb, Point mousePos){");
+            writer.println("    public static void mousePressed(int mb, Point mousePos, Position worldPos){");
             writer.println("");
             writer.println("    }");
             writer.println("}");
             writer.close();
-        }catch(Exception e){}
+        }catch(Exception e){}        
         try{
             File file = new File("data/projects/" + name + "/src/update/Update.java");
             file.createNewFile();

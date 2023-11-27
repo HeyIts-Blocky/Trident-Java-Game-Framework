@@ -62,7 +62,7 @@ public class MainPanel extends JPanel {
     public void paintComponent(Graphics graphics){
         super.paintComponent(graphics);
         Graphics g = frameManager.newFrame();
-
+        
         for(TridEntity e: project.currentScene.entities){
             Point p = cam.worldToScreen(e.position);
             e.engineRender(g, this, p.x, p.y);
@@ -81,8 +81,9 @@ public class MainPanel extends JPanel {
                         str += ", ";
                     }
                 }
+                if(c.data.length == 0) str = "NO DATA";
                 g.setColor(Color.white);
-                int width = g.getFontMetrics().stringWidth(str);
+                int width = Math.max(g.getFontMetrics().stringWidth(str), g.getFontMetrics().stringWidth(c.name));
                 g.fillRect(p.x - width / 2, p.y + 32 - 5, width, 20);
                 g.setColor(Color.black);
                 g.setFont(new Font("Arial", Font.PLAIN, 10));
