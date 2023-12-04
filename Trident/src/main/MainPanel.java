@@ -62,6 +62,8 @@ public class MainPanel extends JPanel {
     public void paintComponent(Graphics graphics){
         super.paintComponent(graphics);
         Graphics g = frameManager.newFrame();
+
+        frameManager.bgColor = project.currentScene.bgColor;
         
         for(TridEntity e: project.currentScene.entities){
             Point p = cam.worldToScreen(e.position);
@@ -128,8 +130,10 @@ public class MainPanel extends JPanel {
                 TextBox.draw("Resize", g, dropRect.x + 32, dropRect.y + 16 + 64);
                 resetImg.paintIcon(this, g, dropRect.x, dropRect.y + 64 + 32);
                 TextBox.draw("Return to (0, 0)", g, dropRect.x + 32, dropRect.y + 16 + 64 + 32);
-                quitImg.paintIcon(this, g, dropRect.x, dropRect.y + 128);
-                TextBox.draw("Save and Quit", g, dropRect.x + 32, dropRect.y + 16 + 128);
+                editImg.paintIcon(this, g, dropRect.x, dropRect.y + 128);
+                TextBox.draw("Change bg color", g, dropRect.x + 32, dropRect.y + 16 + 128);
+                quitImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 32);
+                TextBox.draw("Save and Quit", g, dropRect.x + 32, dropRect.y + 16 + 128 + 32);
             }
             if(dropType == 1){
                 deleteImg.paintIcon(this, g, dropRect.x, dropRect.y);
@@ -243,6 +247,19 @@ public class MainPanel extends JPanel {
                                 cam.pos = new Position();
                                 break;
                             case 4:
+                                try{
+                                    int r, g, b;
+                                    String input = JOptionPane.showInputDialog(panel, "Enter the red value.", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    r = Integer.parseInt(input);
+                                    input = JOptionPane.showInputDialog(panel, "Enter the green value.", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    g = Integer.parseInt(input);
+                                    input = JOptionPane.showInputDialog(panel, "Enter the blue value.", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    b = Integer.parseInt(input);
+                                    Color c = new Color(r, g, b);
+                                    project.currentScene.bgColor = c;
+                                }catch(Exception e){}
+                                break;
+                            case 5:
                                 project.currentScene.save("data/projects/" + project.name);
                                 System.exit(0);
                                 break;
@@ -291,7 +308,7 @@ public class MainPanel extends JPanel {
                                     try{
                                         int[] data = new int[3];
                                         for(int i = 0; i < 3; i++){
-                                            String input = JOptionPane.showInputDialog(null, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                            String input = JOptionPane.showInputDialog(panel, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
                                             data[i] = Integer.parseInt(input);
                                         }
                                         BoxColl box = (BoxColl)selectedEntity;
@@ -302,7 +319,7 @@ public class MainPanel extends JPanel {
                                     try{
                                         int[] data = new int[3];
                                         for(int i = 0; i < 3; i++){
-                                            String input = JOptionPane.showInputDialog(null, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                            String input = JOptionPane.showInputDialog(panel, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
                                             data[i] = Integer.parseInt(input);
                                         }
                                         BoxNoColl box = (BoxNoColl)selectedEntity;
@@ -314,7 +331,7 @@ public class MainPanel extends JPanel {
                                         CustomEntity c = (CustomEntity)selectedEntity;
                                         int[] data = new int[c.data.length];
                                         for(int i = 0; i < c.data.length; i++){
-                                            String input = JOptionPane.showInputDialog(null, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                            String input = JOptionPane.showInputDialog(panel, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
                                             data[i] = Integer.parseInt(input);
                                         }
                                         c.data = data;
@@ -324,7 +341,7 @@ public class MainPanel extends JPanel {
                                     try{
                                         int[] data = new int[1];
                                         for(int i = 0; i < 1; i++){
-                                            String input = JOptionPane.showInputDialog(null, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                            String input = JOptionPane.showInputDialog(panel, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
                                             data[i] = Integer.parseInt(input);
                                         }
                                         Trigger box = (Trigger)selectedEntity;
@@ -355,25 +372,25 @@ public class MainPanel extends JPanel {
                                 break;
                             case 4:
                                 try{
-                                    String input = JOptionPane.showInputDialog(null, "Enter the ID for the trigger", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    String input = JOptionPane.showInputDialog(panel, "Enter the ID for the trigger", "Trident", JOptionPane.QUESTION_MESSAGE);
                                     int id = Integer.parseInt(input);
                                     project.currentScene.entities.add(new Trigger(worldPos, new Dimension(100, 100), id));
                                 }catch(Exception e){}
                                 break;
                             case 5:
-                                String name = JOptionPane.showInputDialog(null, "Enter the object name", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                String name = JOptionPane.showInputDialog(panel, "Enter the object name", "Trident", JOptionPane.QUESTION_MESSAGE);
                                 if(name != null){
-                                    int coll = JOptionPane.showConfirmDialog(null, "Does the object have collision?", "Trident", JOptionPane.YES_NO_CANCEL_OPTION);
+                                    int coll = JOptionPane.showConfirmDialog(panel, "Does the object have collision?", "Trident", JOptionPane.YES_NO_CANCEL_OPTION);
                                     if(coll == 2) break;
                                     Dimension collider = null;
                                     if(coll == 0) collider = new Dimension(100, 100);
 
-                                    String input = JOptionPane.showInputDialog(null, "Enter the amount of data you need", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    String input = JOptionPane.showInputDialog(panel, "Enter the amount of data you need", "Trident", JOptionPane.QUESTION_MESSAGE);
                                     try{
                                         int numData = Integer.parseInt(input);
                                         int[] data = new int[numData];
                                         for(int i = 0; i < numData; i++){
-                                            String dataStr = JOptionPane.showInputDialog(null, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                            String dataStr = JOptionPane.showInputDialog(panel, "Enter data[" + i + "]", "Trident", JOptionPane.QUESTION_MESSAGE);
                                             data[i] = Integer.parseInt(dataStr);
                                         }
                                         project.currentScene.entities.add(new CustomEntity(worldPos, collider, data, name));
@@ -402,19 +419,19 @@ public class MainPanel extends JPanel {
                     if(mousePos.x < 40){
                         dropDown = true;
                         dropType = 0;
-                        dropRect = new Rectangle(0, 40, 200, 32 * 5);
+                        dropRect = new Rectangle(0, 40, 200, 32 * 6);
                     }else if(mousePos.x < 90){
                         BTools.openHighlightFile(new File("data/projects/" + project.name).getAbsolutePath());
                     }else if(mousePos.x < 212){
-                        String name = JOptionPane.showInputDialog(null, "Enter the scene name", "Trident", JOptionPane.QUESTION_MESSAGE);
+                        String name = JOptionPane.showInputDialog(panel, "Enter the scene name", "Trident", JOptionPane.QUESTION_MESSAGE);
                         if(name != null){
                             boolean loaded = project.loadScene(name);
                             if(!loaded){
-                                JOptionPane.showMessageDialog(null, "Error: no scene with name '" + name + "' found.", "Trident", JOptionPane.ERROR_MESSAGE);
+                                JOptionPane.showMessageDialog(panel, "Error: no scene with name '" + name + "' found.", "Trident", JOptionPane.ERROR_MESSAGE);
                             }
                         }
                     }else if(mousePos.x < 327){
-                        String name = JOptionPane.showInputDialog(null, "Enter the scene name", "Trident", JOptionPane.QUESTION_MESSAGE);
+                        String name = JOptionPane.showInputDialog(panel, "Enter the scene name", "Trident", JOptionPane.QUESTION_MESSAGE);
                         if(name != null){
                             Scene scene = new Scene(name);
                             scene.save("data/projects/" + project.name);

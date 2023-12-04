@@ -13,6 +13,7 @@ public class Scene {
     public ArrayList<TridEntity> entities;
     protected Position plrStart = new Position();
     protected int plrDir = Player.SOUTH;
+    public Color bgColor = Color.white;
     private TridEntity[] entRegistry = {
         new BoxColl(),
         new BoxNoColl(),
@@ -37,8 +38,15 @@ public class Scene {
             if(str.equals("north")) plrDir = Player.NORTH;
             if(str.equals("east")) plrDir = Player.EAST;
         }
-        obj = BSonParser.getObject("entities", objects);
+        obj = BSonParser.getObject("bgColor", objects);
         BSonList asList = (BSonList)obj;
+        int r, g, b;
+        r = asList.list.get(0).getInt();
+        g = asList.list.get(1).getInt();
+        b = asList.list.get(2).getInt();
+        bgColor = new Color(r, g, b);
+        obj = BSonParser.getObject("entities", objects);
+        asList = (BSonList)obj;
         for(int i = 0; i < asList.list.size(); i++){
             System.out.println(i);
             String objName = asList.list.get(i).getString();
@@ -108,6 +116,11 @@ public class Scene {
             PrintWriter writer = new PrintWriter(file);
             writer.println("string name " + name);
             writer.println("string dir south");
+            writer.println("{ bgColor");
+            writer.println("int " + bgColor.getRed());
+            writer.println("int " + bgColor.getGreen());
+            writer.println("int " + bgColor.getBlue());
+            writer.println("}");
             writer.println("{ entities");
             for(TridEntity e: entities){
                 writer.println("string " + e.name);
