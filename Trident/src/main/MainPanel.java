@@ -18,6 +18,7 @@ public class MainPanel extends JPanel {
     Camera cam;
     ImageIcon icon = new ImageIcon("data/icon.png");
     int tool = 0;
+    boolean drawLight = false;
 
     Cursor[] cursors = {
         BTools.getCustomCursor(new ImageIcon("data/images/cursors/select.png")),
@@ -44,6 +45,9 @@ public class MainPanel extends JPanel {
     ImageIcon duplicateImg = new ImageIcon("data/images/dropdown/duplicate.png");
     ImageIcon editImg = new ImageIcon("data/images/dropdown/edit.png");
     ImageIcon triggerImg = new ImageIcon("data/images/dropdown/trigger.png");
+    ImageIcon lightImg = new ImageIcon("data/images/dropdown/light.png");
+
+    long saveTime = 0;
 
     TridEntity selectedEntity = null;
 
@@ -103,12 +107,21 @@ public class MainPanel extends JPanel {
             }
         }
 
+        if(drawLight){
+            int darkness = -project.currentScene.defaultLight + 255;
+            frameManager.fillScreen(new Color(0f, 0f, 0f, (darkness / 255f)));
+        }
+
         g.setColor(new Color(0f, 0f, 0f, 0.5f));
         g.fillRect(0, 0, frameManager.WIDTH, 40);
+        g.fillRect(0, frameManager.HEIGHT - 40, frameManager.WIDTH, 40);
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.PLAIN, 20));
-        TextBox.draw("Code   Load Scene   New Scene   Save", g, 40, 20);
+        TextBox.draw("Code   Load Scene   New Scene   Save   PlrDir: " + project.currentScene.getDir(), g, 40, 20);
         icon.paintIcon(this, g, 4, 4);
+        TextBox.draw("[L] Show Darkness: " + drawLight + "    Default light level: " + project.currentScene.defaultLight, g, frameManager.WIDTH - 10, frameManager.HEIGHT - 20, TextBox.RIGHT);
+        g.setColor(new Color(1f, 1f, 1f, (saveTime / 1000f)));
+        TextBox.draw("Saved!", g, 10, frameManager.HEIGHT - 20);
 
         if(dropDown){
             g.setColor(Color.lightGray);
@@ -132,8 +145,10 @@ public class MainPanel extends JPanel {
                 TextBox.draw("Return to (0, 0)", g, dropRect.x + 32, dropRect.y + 16 + 64 + 32);
                 editImg.paintIcon(this, g, dropRect.x, dropRect.y + 128);
                 TextBox.draw("Change bg color", g, dropRect.x + 32, dropRect.y + 16 + 128);
-                quitImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 32);
-                TextBox.draw("Save and Quit", g, dropRect.x + 32, dropRect.y + 16 + 128 + 32);
+                lightImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 32);
+                TextBox.draw("Set Default Light", g, dropRect.x + 32, dropRect.y + 16 + 128 + 32);
+                quitImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 64);
+                TextBox.draw("Save and Quit", g, dropRect.x + 32, dropRect.y + 16 + 128 + 64);
             }
             if(dropType == 1){
                 deleteImg.paintIcon(this, g, dropRect.x, dropRect.y);
@@ -158,6 +173,8 @@ public class MainPanel extends JPanel {
                 TextBox.draw("Add Trigger", g, dropRect.x + 32, dropRect.y + 16 + 128);
                 customImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 32);
                 TextBox.draw("Add Custom Entity", g, dropRect.x + 32, dropRect.y + 16 + 128 + 32);
+                lightImg.paintIcon(this, g, dropRect.x, dropRect.y + 128 + 64);
+                TextBox.draw("Add Light", g, dropRect.x + 32, dropRect.y + 16 + 128 + 64);
             }
         }
 
@@ -226,6 +243,9 @@ public class MainPanel extends JPanel {
                     project.currentScene.entities.add(new CustomEntity(box.position.copy(), collision, data, box.name));
                 }
             }
+            if(key == KeyEvent.VK_L){
+                drawLight = !drawLight;
+            }
         }
 
         public void onMousePressed(int mb, Point mousePos){
@@ -260,6 +280,15 @@ public class MainPanel extends JPanel {
                                 }catch(Exception e){}
                                 break;
                             case 5:
+                                try{
+                                    int level;
+                                    String input = JOptionPane.showInputDialog(panel, "Enter the new default light level", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                    level = Integer.parseInt(input);
+                                    level = BTools.clamp(level, 0, 255);
+                                    project.currentScene.defaultLight = level;
+                                }catch(Exception e){}
+                                break;
+                            case 6:
                                 project.currentScene.save("data/projects/" + project.name);
                                 System.exit(0);
                                 break;
@@ -402,6 +431,9 @@ public class MainPanel extends JPanel {
                                     }
                                 }
                                 break;
+                            case 6:
+                                project.currentScene.entities.add(new project.ent.Light(worldPos, 50));
+                                break;
                             }
                         }
 
@@ -414,12 +446,12 @@ public class MainPanel extends JPanel {
                 }
 
                 if(mousePos.y < 40){
-                    // System.out.println(mousePos.x);
+                    System.out.println(mousePos.x);
                     // Toolbar
                     if(mousePos.x < 40){
                         dropDown = true;
                         dropType = 0;
-                        dropRect = new Rectangle(0, 40, 200, 32 * 6);
+                        dropRect = new Rectangle(0, 40, 200, 32 * 7);
                     }else if(mousePos.x < 90){
                         BTools.openHighlightFile(new File("data/projects/" + project.name).getAbsolutePath());
                     }else if(mousePos.x < 212){
@@ -440,6 +472,10 @@ public class MainPanel extends JPanel {
                         }
                     }else if(mousePos.x < 391){
                         project.currentScene.save("data/projects/" + project.name);
+                        saveTime = 1000;
+                    }else if(mousePos.x < 520){
+                        project.currentScene.plrDir++;
+                        if(project.currentScene.plrDir > 3) project.currentScene.plrDir = 0;
                     }
                 }else{
                     if(tool == 0){
@@ -461,7 +497,7 @@ public class MainPanel extends JPanel {
                 if(selectedEntity == null){
                     dropDown = true;
                     dropType = 2;
-                    dropRect = new Rectangle(mousePos.x, mousePos.y, 200, 32 * 6);
+                    dropRect = new Rectangle(mousePos.x, mousePos.y, 200, 32 * 7);
                 }else{
                     dropDown = true;
                     dropType = 1;
@@ -491,11 +527,19 @@ public class MainPanel extends JPanel {
             cam.pos.x += dir.x * server.getElapsedTime() * speed;
             cam.pos.y += dir.y * server.getElapsedTime() * speed;
 
+            saveTime -= server.getElapsedTime();
+            if(saveTime < 0) saveTime = 0;
+
             if(tool == 1 && selectedEntity != null && km.getMouseDown(1)){
                 selectedEntity.position.x += delta.x;
                 selectedEntity.position.y += delta.y;
             }
             if(tool == 2 && selectedEntity != null && km.getMouseDown(1)){
+                if(selectedEntity instanceof project.ent.Light){
+                    project.ent.Light light = (project.ent.Light)selectedEntity;
+                    light.radius += delta.x;
+                    if(light.radius < 0) light.radius = 0;
+                }
                 if(selectedEntity instanceof BoxNoColl){
                     BoxNoColl box = (BoxNoColl)selectedEntity;
                     box.width += delta.x;

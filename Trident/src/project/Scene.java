@@ -12,7 +12,7 @@ public class Scene {
     public final String name;
     public ArrayList<TridEntity> entities;
     protected Position plrStart = new Position();
-    protected int plrDir = Player.SOUTH;
+    public int plrDir = Player.SOUTH;
     public Color bgColor = Color.white;
     private TridEntity[] entRegistry = {
         new BoxColl(),
@@ -20,7 +20,9 @@ public class Scene {
         new InvisColl(),
         new PlrStart(),
         new Trigger(),
+        new project.ent.Light(),
     };
+    public int defaultLight = 255;
 
     public Scene(String n){ // Empty scene
         name = n;
@@ -45,6 +47,8 @@ public class Scene {
         g = asList.list.get(1).getInt();
         b = asList.list.get(2).getInt();
         bgColor = new Color(r, g, b);
+        obj = BSonParser.getObject("light", objects);
+        defaultLight = obj.getInt();
         obj = BSonParser.getObject("entities", objects);
         asList = (BSonList)obj;
         for(int i = 0; i < asList.list.size(); i++){
@@ -109,13 +113,22 @@ public class Scene {
         }
     }
 
+    public String getDir(){
+        if(plrDir == Player.SOUTH) return "south";
+        if(plrDir == Player.EAST) return "east";
+        if(plrDir == Player.WEST) return "west";
+        if(plrDir == Player.NORTH) return "north";
+        return "unknown direction";
+    }
+
     public void save(String projDir){
         try{
             File file = new File(projDir + "/data/scenes/" + name + ".bson");
             file.createNewFile();
             PrintWriter writer = new PrintWriter(file);
             writer.println("string name " + name);
-            writer.println("string dir south");
+            writer.println("string dir " + getDir());
+            writer.println("int light " + defaultLight);
             writer.println("{ bgColor");
             writer.println("int " + bgColor.getRed());
             writer.println("int " + bgColor.getGreen());
@@ -150,6 +163,10 @@ public class Scene {
                     writer.println("int " + trig.box.width);
                     writer.println("int " + trig.box.height);
                     writer.println("int " + trig.id);
+                }
+                if(e instanceof project.ent.Light){
+                    project.ent.Light light = (project.ent.Light)e;
+                    writer.println("int " + light.radius);
                 }
                 if(e instanceof CustomEntity){
                     CustomEntity custom = (CustomEntity)e;
