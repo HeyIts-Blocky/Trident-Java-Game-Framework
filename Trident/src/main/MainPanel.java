@@ -290,8 +290,9 @@ public class MainPanel extends JPanel {
                                 break;
                             case 6:
                                 project.currentScene.save("data/projects/" + project.name);
-                                System.exit(0);
-                                break;
+                                Main.window.dispose();
+                                Main.main(new String[0]);
+                                return;
                             }
                         }
                         if(dropType == 1){

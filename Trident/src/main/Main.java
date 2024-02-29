@@ -1,11 +1,11 @@
 package main;
 
 import javax.swing.*;
-
 import project.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.nio.file.Files;
 public class Main {
     public static Image icon = new ImageIcon("data/icon.png").getImage();
     public static void main(String[] args){
@@ -131,28 +131,37 @@ public class Main {
             loadButton.setBackground(new Color(0, 0, 50));
             loadButton.setForeground(Color.white);
             selWindow.add(loadButton);
-            JButton deleteButton = new JButton("Remove from Registry");
+            JButton deleteButton = new JButton("Delete Project");
             deleteButton.addActionListener(new ActionListener(){
                 public void actionPerformed(ActionEvent e){
-                    Project.projRegistry[loadSel] = null;
-                    String[] newRegistry = new String[Project.projRegistry.length - 1];
-                    boolean skippedNull = false;
-                    for(int i = 0; i < Project.projRegistry.length; i++){
-                        if(Project.projRegistry[i] != null){
-                            newRegistry[i + (skippedNull ? 1 : 0)] = Project.projRegistry[i];
-                        }else{
-                            skippedNull = true;
+
+                    int sel = JOptionPane.showConfirmDialog(selWindow, "Are you sure you want to delete this project?", "Trident", JOptionPane.YES_NO_OPTION);
+
+                    if(sel == 0){
+                        deleteDir(new File("data/projects/" + Project.projRegistry[loadSel]));
+                        
+                        String[] newRegistry = new String[Project.projRegistry.length - 1];
+                        for(int i = 0, j = 0; i < Project.projRegistry.length; i++){
+                            if(i != loadSel){
+                                newRegistry[j] = Project.projRegistry[i];
+                                j++;
+                            }
                         }
+                        Project.projRegistry = newRegistry;
+                        loadSel = 0;
+                        Project.saveRegistry();
+
+                        JOptionPane.showMessageDialog(selWindow, "Deleted the project.", "Trident", JOptionPane.INFORMATION_MESSAGE);
+
+                        if(Project.projRegistry.length == 0){
+                            selWindow.dispose();
+                            main(new String[0]);
+                            return;
+                        }
+                        text.setText(Project.projRegistry[loadSel] + "\n(" + (loadSel + 1) + "/" + Project.projRegistry.length + ")");
                     }
-                    Project.projRegistry = newRegistry;
-                    loadSel = 0;
-                    Project.saveRegistry();
-                    if(Project.projRegistry.length == 0){
-                        selWindow.dispose();
-                        main(new String[0]);
-                        return;
-                    }
-                    text.setText(Project.projRegistry[loadSel] + "\n(" + (loadSel + 1) + "/" + Project.projRegistry.length + ")");
+
+                    
                 }
             });
             deleteButton.setBackground(new Color(0, 0, 50));
@@ -205,9 +214,25 @@ public class Main {
             main(new String[0]);
         }
     }
+
+    public static void deleteDir(File file) {
+        if(!file.exists()) return;
+
+        File[] contents = file.listFiles();
+        if (contents != null) {
+            for (File f : contents) {
+                if (! Files.isSymbolicLink(f.toPath())) {
+                    deleteDir(f);
+                }
+            }
+        }
+        file.delete();
+    }
+
+    public static JFrame window;
     
     public static void loadProject(int proj){
-        JFrame window = new JFrame("Trident Editor");
+        window = new JFrame("Trident Editor");
         window.setSize(700, 500);
         window.setMinimumSize(new Dimension(700, 500));
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
