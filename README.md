@@ -20,11 +20,10 @@ Put the custom classes you write that aren't entities in here.
 
 Put your custom entity classes in here
 
-> ExampleEntity.java
-
-*Template for custom entities*
-
 ```
+ ** ExampleEntity.java **
+Template for custom entities
+
 > ExampleEntity(Position pos)
 Builds the entity
 ```
