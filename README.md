@@ -23,3 +23,8 @@ Put your custom entity classes in here
 > ExampleEntity.java
 
 *Template for custom entities*
+
+```
+> ExampleEntity(Position pos)
+Builds the entity
+```
