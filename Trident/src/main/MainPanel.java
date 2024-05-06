@@ -9,6 +9,7 @@ import java.awt.*;
 import blib.game.*;
 import java.io.*;
 import project.ent.*;
+import project.ent.Light;
 public class MainPanel extends JPanel {
 
     Project project;
@@ -46,6 +47,9 @@ public class MainPanel extends JPanel {
     ImageIcon editImg = new ImageIcon("data/images/dropdown/edit.png");
     ImageIcon triggerImg = new ImageIcon("data/images/dropdown/trigger.png");
     ImageIcon lightImg = new ImageIcon("data/images/dropdown/light.png");
+
+    ImageIcon crosshair = new ImageIcon("data/images/crosshair.png");
+    boolean drawCross = true;
 
     long saveTime = 0;
 
@@ -122,6 +126,9 @@ public class MainPanel extends JPanel {
         TextBox.draw("[L] Show Darkness: " + drawLight + "    Default light level: " + project.currentScene.defaultLight, g, frameManager.WIDTH - 10, frameManager.HEIGHT - 20, TextBox.RIGHT);
         g.setColor(new Color(1f, 1f, 1f, (saveTime / 1000f)));
         TextBox.draw("Saved!", g, 10, frameManager.HEIGHT - 20);
+        g.setColor(Color.white);
+        g.setFont(new Font("Arial", Font.PLAIN, 15));
+        TextBox.draw("(" + cam.pos.toStringSimple() + ")", g, frameManager.WIDTH, 10, TextBox.RIGHT);
 
         if(dropDown){
             g.setColor(Color.lightGray);
@@ -178,6 +185,8 @@ public class MainPanel extends JPanel {
             }
         }
 
+        if(drawCross) crosshair.paintIcon(this, g, frameManager.WIDTH / 2 - 4, frameManager.HEIGHT / 2 - 4);
+
         frameManager.renderFrame(this, graphics);
     }
 
@@ -215,22 +224,32 @@ public class MainPanel extends JPanel {
                 if(selectedEntity instanceof BoxColl){
                     BoxColl box = (BoxColl)selectedEntity;
                     project.currentScene.entities.add(new BoxColl(box.position.copy(), new Dimension(box.collision.width, box.collision.height), box.color));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
                 if(selectedEntity instanceof BoxNoColl){
                     BoxNoColl box = (BoxNoColl)selectedEntity;
                     project.currentScene.entities.add(new BoxNoColl(box.position.copy(), box.color, box.width, box.height));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
                 if(selectedEntity instanceof InvisColl){
                     InvisColl box = (InvisColl)selectedEntity;
                     project.currentScene.entities.add(new InvisColl(box.position.copy(), new Dimension(box.collision.width, box.collision.height)));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
                 if(selectedEntity instanceof Trigger){
                     Trigger box = (Trigger)selectedEntity;
                     project.currentScene.entities.add(new Trigger(box.position.copy(), new Dimension(box.box.width, box.box.height), box.id));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
                 if(selectedEntity instanceof PlrStart){
                     PlrStart box = (PlrStart)selectedEntity;
                     project.currentScene.entities.add(new PlrStart(box.position.copy()));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
+                }
+                if(selectedEntity instanceof Light){
+                    Light box = (Light)selectedEntity;
+                    project.currentScene.entities.add(new Light(box.position.copy(), box.radius));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
                 if(selectedEntity instanceof CustomEntity){
                     CustomEntity box = (CustomEntity)selectedEntity;
@@ -241,10 +260,14 @@ public class MainPanel extends JPanel {
                     Dimension collision = null;
                     if(box.collision != null) collision = new Dimension(box.collision.width, box.collision.height);
                     project.currentScene.entities.add(new CustomEntity(box.position.copy(), collision, data, box.name));
+                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                 }
             }
             if(key == KeyEvent.VK_L){
                 drawLight = !drawLight;
+            }
+            if(key == KeyEvent.VK_C && !km.getKeyDown(KeyEvent.VK_CONTROL)){
+                drawCross = !drawCross;
             }
         }
 
@@ -305,22 +328,32 @@ public class MainPanel extends JPanel {
                                 if(selectedEntity instanceof BoxColl){
                                     BoxColl box = (BoxColl)selectedEntity;
                                     project.currentScene.entities.add(new BoxColl(box.position.copy(), new Dimension(box.collision.width, box.collision.height), box.color));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 if(selectedEntity instanceof BoxNoColl){
                                     BoxNoColl box = (BoxNoColl)selectedEntity;
                                     project.currentScene.entities.add(new BoxNoColl(box.position.copy(), box.color, box.width, box.height));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 if(selectedEntity instanceof InvisColl){
                                     InvisColl box = (InvisColl)selectedEntity;
                                     project.currentScene.entities.add(new InvisColl(box.position.copy(), new Dimension(box.collision.width, box.collision.height)));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 if(selectedEntity instanceof Trigger){
                                     Trigger box = (Trigger)selectedEntity;
                                     project.currentScene.entities.add(new Trigger(box.position.copy(), new Dimension(box.box.width, box.box.height), box.id));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 if(selectedEntity instanceof PlrStart){
                                     PlrStart box = (PlrStart)selectedEntity;
                                     project.currentScene.entities.add(new PlrStart(box.position.copy()));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
+                                }
+                                if(selectedEntity instanceof Light){
+                                    Light box = (Light)selectedEntity;
+                                    project.currentScene.entities.add(new Light(box.position.copy(), box.radius));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 if(selectedEntity instanceof CustomEntity){
                                     CustomEntity box = (CustomEntity)selectedEntity;
@@ -331,6 +364,7 @@ public class MainPanel extends JPanel {
                                     Dimension collision = null;
                                     if(box.collision != null) collision = new Dimension(box.collision.width, box.collision.height);
                                     project.currentScene.entities.add(new CustomEntity(box.position.copy(), collision, data, box.name));
+                                    selectedEntity = project.currentScene.entities.get(project.currentScene.entities.size() - 1);
                                 }
                                 break;
                             case 2:
@@ -461,6 +495,8 @@ public class MainPanel extends JPanel {
                             boolean loaded = project.loadScene(name);
                             if(!loaded){
                                 JOptionPane.showMessageDialog(panel, "Error: no scene with name '" + name + "' found.", "Trident", JOptionPane.ERROR_MESSAGE);
+                            }else{
+                                cam.pos = new Position();
                             }
                         }
                     }else if(mousePos.x < 327){
@@ -470,6 +506,7 @@ public class MainPanel extends JPanel {
                             scene.save("data/projects/" + project.name);
                             project.setupScenes();
                             project.loadScene(name);
+                            cam.pos = new Position();
                         }
                     }else if(mousePos.x < 391){
                         project.currentScene.save("data/projects/" + project.name);
@@ -477,6 +514,23 @@ public class MainPanel extends JPanel {
                     }else if(mousePos.x < 520){
                         project.currentScene.plrDir++;
                         if(project.currentScene.plrDir > 3) project.currentScene.plrDir = 0;
+                    }else{
+                        try{
+                            double x, y;
+                            String inputX = JOptionPane.showInputDialog(panel, "Enter the x position", "Trident", JOptionPane.QUESTION_MESSAGE);
+                            if(inputX != null){
+                                x = Double.parseDouble(inputX);
+                                String inputY = JOptionPane.showInputDialog(panel, "Enter the y position", "Trident", JOptionPane.QUESTION_MESSAGE);
+                                if(inputY != null){
+                                    y = Double.parseDouble(inputY);
+                                    cam.pos = new Position(x, y);
+                                }
+                            }
+                        }catch(Exception e){
+                            JOptionPane.showMessageDialog(panel, "Invalid input", "Trident", JOptionPane.ERROR_MESSAGE);
+                        }
+                        
+                        
                     }
                 }else{
                     if(tool == 0){
@@ -528,12 +582,18 @@ public class MainPanel extends JPanel {
             cam.pos.x += dir.x * server.getElapsedTime() * speed;
             cam.pos.y += dir.y * server.getElapsedTime() * speed;
 
+
+
             saveTime -= server.getElapsedTime();
             if(saveTime < 0) saveTime = 0;
 
             if(tool == 1 && selectedEntity != null && km.getMouseDown(1)){
                 selectedEntity.position.x += delta.x;
                 selectedEntity.position.y += delta.y;
+
+                
+                selectedEntity.position.x += dir.x * server.getElapsedTime() * speed;
+                selectedEntity.position.y += dir.y * server.getElapsedTime() * speed;
             }
             if(tool == 2 && selectedEntity != null && km.getMouseDown(1)){
                 if(selectedEntity instanceof project.ent.Light){

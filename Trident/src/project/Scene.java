@@ -52,13 +52,11 @@ public class Scene {
         obj = BSonParser.getObject("entities", objects);
         asList = (BSonList)obj;
         for(int i = 0; i < asList.list.size(); i++){
-            System.out.println(i);
             String objName = asList.list.get(i).getString();
             i++;
             boolean foundEnt = false;
             for(TridEntity e: entRegistry){
                 if(e.name.equals(objName)){
-                    System.out.println("load " + objName);
                     double x, y;
                     x = asList.list.get(i).getDouble();
                     i++;
