@@ -4,4 +4,5 @@ Trident is a framework game engine built with and using the Java programming lan
 *Trident uses Java 8*
 
 Trident website: https://sites.google.com/view/trident-game-engine/home
+
 Example projects: https://github.com/HeyIts-Blocky/Trident-Example-Projects
