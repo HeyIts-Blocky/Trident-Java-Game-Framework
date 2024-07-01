@@ -3,7 +3,7 @@ package trident;
 import javax.swing.*;
 import java.awt.*;
 public class Main{
-    protected static JFrame window = new JFrame("blank2d");
+    protected static JFrame window = new JFrame("2D Trident Project");
     public static void main(String[] args){
         window.setSize(700, 500);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
