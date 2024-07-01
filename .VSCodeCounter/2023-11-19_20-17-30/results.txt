@@ -1,0 +1,38 @@
+Date : 2023-11-19 20:17:30
+Directory : c:\Users\User\Documents\My Programs\Java\Trident\src
+Total : 10 files,  1396 codes, 11 comments, 109 blanks, all 1516 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Java     |         10 |      1,396 |         11 |        109 |      1,516 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                  |         10 |      1,396 |         11 |        109 |      1,516 |
+| main                                                                               |          2 |        250 |          3 |         35 |        288 |
+| project                                                                            |          8 |      1,146 |          8 |         74 |      1,228 |
+| project (Files)                                                                    |          3 |      1,019 |          8 |         41 |      1,068 |
+| project\ent                                                                        |          5 |        127 |          0 |         33 |        160 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                           | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\User\Documents\My Programs\Java\Trident\src\main\Main.java                | Java     |        202 |          2 |         16 |        220 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\main\MainPanel.java           | Java     |         48 |          1 |         19 |         68 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\Project.java          | Java     |        849 |          8 |         21 |        878 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\Scene.java            | Java     |        118 |          0 |          6 |        124 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\TridEntity.java       | Java     |         52 |          0 |         14 |         66 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\ent\BoxColl.java      | Java     |         30 |          0 |          8 |         38 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\ent\BoxNoColl.java    | Java     |         38 |          0 |          8 |         46 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\ent\CustomEntity.java | Java     |         14 |          0 |          4 |         18 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\ent\InvisColl.java    | Java     |         24 |          0 |          7 |         31 |
+| c:\Users\User\Documents\My Programs\Java\Trident\src\project\ent\PlrStart.java     | Java     |         21 |          0 |          6 |         27 |
+| Total                                                                              |          |      1,396 |         11 |        109 |      1,516 |
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

@@ -1,0 +1,43 @@
+string name default
+string dir east
+int light 25
+{ bgColor
+int 255
+int 255
+int 255
+}
+{ entities
+string boxcoll
+double -200
+double 0
+boolean true
+int 100
+int 100
+int 0
+int 255
+int 0
+string plrstart
+double -300
+double 0
+boolean false
+string inviscoll
+double -200
+double 100
+boolean true
+int 100
+int 100
+string boxnocoll
+double -200
+double -100
+boolean false
+int 100
+int 100
+int 255
+int 0
+int 0
+string light
+double -200
+double 200
+boolean false
+int 100
+}
