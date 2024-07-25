@@ -1,10 +1,10 @@
-package project.ent;
+package trident.ent;
 
 import blib.util.*;
 import java.awt.*;
 import javax.swing.*;
 
-import project.*;
+import trident.*;
 public class BoxColl extends TridEntity{
 
     public Color color = Color.white;
@@ -14,11 +14,9 @@ public class BoxColl extends TridEntity{
     public BoxColl(Position pos, Dimension size, Color c){
         super(pos, size);
         color = c;
-        name = "boxcoll";
     }
     public BoxColl(Position pos, Dimension size){
         super(pos, size);
-        name = "boxcoll";
     }
     public BoxColl(){
         super("boxcoll", true, 3);
@@ -28,12 +26,12 @@ public class BoxColl extends TridEntity{
     }
 
     public void render(Graphics g, JPanel panel, int x, int y){
-        engineRender(g, panel, x, y);
+        g.setColor(color);
+        g.fillRect(x - getCollision().width / 2, y - getCollision().height / 2, getCollision().width, getCollision().height);
     }
 
     public void engineRender(Graphics g, JPanel panel, int x, int y){
-        g.setColor(color);
-        g.fillRect(x - getCollision().width / 2, y - getCollision().height / 2, getCollision().width, getCollision().height);
+        render(g, panel, x, y);
         engineImg.paintIcon(panel, g, x - engineImg.getIconWidth() / 2, y - engineImg.getIconHeight() / 2);
     }
 }

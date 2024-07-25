@@ -10,6 +10,7 @@ import blib.game.*;
 import java.io.*;
 import project.ent.*;
 import project.ent.Light;
+import java.util.ArrayList;
 public class MainPanel extends JPanel {
 
     Project project;
@@ -73,41 +74,14 @@ public class MainPanel extends JPanel {
 
         frameManager.bgColor = project.currentScene.bgColor;
         
+        ArrayList<Entity> ents = new ArrayList<Entity>();
+        for(TridEntity e: project.currentScene.entities) ents.add((Entity)e);
+        cam.render(g, ents);
         for(TridEntity e: project.currentScene.entities){
             Point p = cam.worldToScreen(e.position);
-            e.engineRender(g, this, p.x, p.y);
             if(e.equals(selectedEntity)){
                 g.setColor(new Color(0f, 0.2f, 1f, 0.5f));
-                g.fillOval(p.x - 32, p.y - 32, 64, 64);
-            }
-            if(e instanceof CustomEntity){
-                CustomEntity c = (CustomEntity)e;
-                String str = "[";
-                for(int i = 0; i < c.data.length; i++){
-                    str += c.data[i] + "";
-                    if(i == c.data.length - 1){
-                        str += "]";
-                    }else{
-                        str += ", ";
-                    }
-                }
-                if(c.data.length == 0) str = "NO DATA";
-                g.setColor(Color.white);
-                int width = Math.max(g.getFontMetrics().stringWidth(str), g.getFontMetrics().stringWidth(c.name));
-                g.fillRect(p.x - width / 2, p.y + 32 - 5, width, 20);
-                g.setColor(Color.black);
-                g.setFont(new Font("Arial", Font.PLAIN, 10));
-                TextBox.draw(c.name + "\n" + str, g, p.x, p.y + 32, TextBox.CENTER);
-            }
-            if(e instanceof Trigger){
-                Trigger trig = (Trigger)e;
-                String str = "" + trig.id;
-                g.setColor(Color.white);
-                int width = g.getFontMetrics().stringWidth(str);
-                g.fillRect(p.x - width / 2, p.y + 32 - 5, width, 10);
-                g.setColor(Color.black);
-                g.setFont(new Font("Arial", Font.PLAIN, 10));
-                TextBox.draw(str, g, p.x, p.y + 32, TextBox.CENTER);
+                g.fillOval((int)((p.x / cam.getZoom()) - 32), (int)((p.y / cam.getZoom()) - 32), 64, 64);
             }
         }
 
@@ -128,7 +102,7 @@ public class MainPanel extends JPanel {
         TextBox.draw("Saved!", g, 10, frameManager.HEIGHT - 20);
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.PLAIN, 15));
-        TextBox.draw("(" + cam.pos.toStringSimple() + ")", g, frameManager.WIDTH, 10, TextBox.RIGHT);
+        TextBox.draw("(" + cam.pos.toStringSimple() + ")\nx" + BTools.simplifyDouble(cam.getZoom()), g, frameManager.WIDTH, 10, TextBox.RIGHT);
 
         if(dropDown){
             g.setColor(Color.lightGray);
@@ -547,7 +521,7 @@ public class MainPanel extends JPanel {
                     }
                 }
             }
-            
+            if(mb == 2) cam.setZoom(1);
             if(mb == 3){
                 if(selectedEntity == null){
                     dropDown = true;
@@ -560,6 +534,13 @@ public class MainPanel extends JPanel {
                 }
             }
 
+        }
+
+        public void onScroll(int scroll){
+            double zDelta = scroll * 0.1;
+            if(km.getKeyDown(KeyEvent.VK_SHIFT)) zDelta *= 2;
+            if(km.getKeyDown(KeyEvent.VK_CONTROL)) zDelta /= 2;
+            cam.setZoom(BTools.clamp(cam.getZoom() + zDelta, 0.1, 15));
         }
     }
 
@@ -579,8 +560,8 @@ public class MainPanel extends JPanel {
             double speed = 0.5;
             if(km.getKeyDown(KeyEvent.VK_SHIFT)) speed *= 2;
             if(km.getKeyDown(KeyEvent.VK_CONTROL)) speed /= 2;
-            cam.pos.x += dir.x * server.getElapsedTime() * speed;
-            cam.pos.y += dir.y * server.getElapsedTime() * speed;
+            cam.pos.x += dir.x * server.getElapsedTime() * speed * cam.getZoom();
+            cam.pos.y += dir.y * server.getElapsedTime() * speed * cam.getZoom();
 
 
 

@@ -1,11 +1,11 @@
-package project.ent;
+package trident.ent;
 
 import blib.util.*;
 import java.awt.*;
 import javax.swing.*;
 import blib.game.*;
 
-import project.*;
+import trident.*;
 public class BoxNoColl extends TridEntity{
     
     public Color color = Color.white;
@@ -19,14 +19,12 @@ public class BoxNoColl extends TridEntity{
         width = w;
         height = h;
         renderType = Entity.UNDER;
-        name = "boxnocoll";
     }
     public BoxNoColl(Position pos, int w, int h){
         super(pos);
         width = w;
         height = h;
         renderType = Entity.UNDER;
-        name = "boxnocoll";
     }
     public BoxNoColl(){
         super("boxnocoll", false, 5);
@@ -36,12 +34,12 @@ public class BoxNoColl extends TridEntity{
     }
 
     public void render(Graphics g, JPanel panel, int x, int y){
-        engineRender(g, panel, x, y);
+        g.setColor(color);
+        g.fillRect(x - width / 2, y - height / 2, width, height);
     }
 
     public void engineRender(Graphics g, JPanel panel, int x, int y){
-        g.setColor(color);
-        g.fillRect(x - width / 2, y - height / 2, width, height);
+        render(g, panel, x, y);
         engineImg.paintIcon(panel, g, x - engineImg.getIconWidth() / 2, y - engineImg.getIconHeight() / 2);
     }
 }
