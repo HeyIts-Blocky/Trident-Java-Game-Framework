@@ -10,22 +10,31 @@ import blib.game.*;
 public class Scene {
     
     public final String name;
+    public boolean loaded = false;
+    public String filePath = null;
     public ArrayList<TridEntity> entities;
     protected Position plrStart = new Position();
-    public int plrDir = Player.SOUTH;
+    protected int plrDir = Player.SOUTH;
     protected Color bgColor = Color.white;
     protected int defaultLight = 255;
 
     public Scene(String n){ // Empty scene
         name = n;
         entities = new ArrayList<TridEntity>();
+        loaded = true;
     }
-    public Scene(File f) throws IOException{
-        entities = new ArrayList<TridEntity>();
-        ArrayList<BSonObject> objects = BSonParser.readFile(f.getAbsolutePath());
+    public Scene(File f){
+        filePath = f.getAbsolutePath();
+
+        ArrayList<BSonObject> objects = BSonParser.readFile(filePath);
         BSonObject obj = BSonParser.getObject("name", objects);
         name = obj.getString();
-        obj = BSonParser.getObject("dir", objects);
+    }
+
+    public void preload(){
+        entities = new ArrayList<TridEntity>();
+        ArrayList<BSonObject> objects = BSonParser.readFile(filePath);
+        BSonObject obj = BSonParser.getObject("dir", objects);
         if(obj != null){
             String str = obj.getString();
             if(str.equals("west")) plrDir = Player.WEST;
@@ -83,6 +92,13 @@ public class Scene {
                 break;
             }
         }
+
+        loaded = true;
+    }
+
+    public void unload(){
+        entities = null;
+        loaded = false;
     }
 
     public static Scene loadScene(String path){ // stub method ::: Load a scene from a file

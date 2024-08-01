@@ -1,0 +1,28 @@
+string name scene2
+string dir south
+int light 255
+{ bgColor
+int 255
+int 255
+int 255
+}
+{ entities
+string boxcoll
+double 4.0
+double -98.0
+boolean true
+int 240
+int 45
+int 255
+int 0
+int 0
+string boxnocoll
+double 5.0
+double 16.0
+boolean false
+int 311
+int 186
+int 0
+int 0
+int 0
+}

@@ -89,10 +89,17 @@ public class Trident {
         
     }
     public static void loadScene(String name){
+        loadScene(name, false);
+    }
+    public static void loadScene(String name, boolean unload){
         lights = new ArrayList<Entity>();
         for(Scene s: loadedScenes){
             if(s.name.equals(name)){
+                Scene oldScene = currentScene;
+
+                if(!s.loaded) s.preload();
                 currentScene = s;
+                if(unload) oldScene.unload();
                 player.goToPos(s.plrStart);
                 player.setDirection(s.plrDir);
                 for(TridEntity e: s.entities){
@@ -109,6 +116,33 @@ public class Trident {
         }
         printConsole("***********************************************************************************");
         printConsole("Error loading scene: No scene with name '" + name + "' found.");
+        printError("***********************************************************************************");
+    }
+    public static void unloadScene(String name){
+        for(Scene s: loadedScenes){
+            if(s.name.equals(name)){
+                if(s.equals(currentScene)){
+                    printError("ERROR: tried to unload current scene");
+                    return;
+                }else{
+                    s.unload();
+                    return;
+                }
+            }
+        }
+        printConsole("***********************************************************************************");
+        printConsole("Error unloading scene: No scene with name '" + name + "' found.");
+        printError("***********************************************************************************");
+    }
+    public static void preloadScene(String name){
+        for(Scene s: loadedScenes){
+            if(s.name.equals(name)){
+                s.preload();
+                return;
+            }
+        }
+        printConsole("***********************************************************************************");
+        printConsole("Error preloading scene: No scene with name '" + name + "' found.");
         printError("***********************************************************************************");
     }
     public static void addCustomEntity(TridEntity e){ // Add a cutsom entity to the registry
@@ -427,6 +461,25 @@ public class Trident {
             case "roll":
                 printConsole("You got " + BTools.randInt(0, 101) + " points");
                 break;
+            case "trigger":
+                int trig = Integer.parseInt(cmdParts.get(1));
+                Update.trigger(trig);
+                printConsole("ran trigger " + trig);
+                break;
+            case "mapList":
+                page = 1;
+                if(cmdParts.size() > 1) page = Integer.parseInt(cmdParts.get(1));
+                printMaps(page);
+                break;
+            case "unloadMap":
+                unloadScene(cmdParts.get(1));
+                break;
+            case "preloadMap":
+                preloadScene(cmdParts.get(1));
+                break;
+            case "currentMap":
+                printConsole("Current map: " + currentScene.name);
+                break;
             default:
                 int cmd = Update.command(cmdParts);
                 if(cmd != 0){
@@ -477,6 +530,11 @@ public class Trident {
         "customHelp [page]",
         "errorTest",
         "roll",
+        "trigger <trig>",
+        "mapList [page]",
+        "unloadMap <name>",
+        "preloadMap <name>",
+        "currentMap",
     };
 
     public static void printHelp(int page){
@@ -492,6 +550,27 @@ public class Trident {
         printConsole("");
         for(int i = startIndex; (i < cmds.length && i < startIndex + 10); i++){
             printConsole("} " + cmds[i]);
+        }
+        printConsole("");
+    }
+
+    public static void printMaps(int page){
+        int startIndex = (page - 1) * 10;
+        if(startIndex > loadedScenes.size() - 1){
+            printConsole("page beyond bounds: " + page);
+            printConsole("number of pages: " + (loadedScenes.size() / 10 + ((loadedScenes.size() % 10 != 0) ? 1 : 0)));
+            return;
+        }
+        
+        printConsole("-- MAPS --");
+        printConsole("Page " + page + " of " + (loadedScenes.size() / 10 + ((loadedScenes.size() % 10 != 0) ? 1 : 0)));
+        printConsole("");
+        for(int i = startIndex; (i < loadedScenes.size() && i < startIndex + 10); i++){
+            Scene s = loadedScenes.get(i);
+            String str = "";
+            if(!s.loaded) str += " [UNLOADED]";
+            if(s.equals(currentScene)) str += " [CURRENT]";
+            printConsole("} " + s.name + str);
         }
         printConsole("");
     }
