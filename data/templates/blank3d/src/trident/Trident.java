@@ -36,6 +36,8 @@ public class Trident {
     public static boolean drawPlayer = true;
     public static Position mouseWorldPos = new Position();
     public static boolean enableBloom = true, enableExposure = true;
+    public static boolean captureCursor = false;
+    public static MainPanel panel = null;
 
 
     // Trident Variables
@@ -56,7 +58,7 @@ public class Trident {
     protected static String newSprite = null;
 
     // Trident events
-    public static final int EVENT_SCREENSHOT = 0;
+    public static final int EVENT_SCREENSHOT = 0, EVENT_FULLSCREEN = 1;
 
 
     // Setting methods

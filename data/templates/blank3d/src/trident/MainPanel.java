@@ -14,7 +14,7 @@ public class MainPanel extends JPanel {
 
     protected FrameManager frameManager = new FrameManager();
     public static Server server;
-    protected KeyManager km = new InputListener(this);
+    public KeyManager km = new InputListener(this);
     private Animator introAnim;
     public static Position introPos = new Position();
     public static ImageIcon splash = new ImageIcon("data/images/trident/splash.png");
@@ -22,6 +22,8 @@ public class MainPanel extends JPanel {
     private RenderingThread rendThread = new RenderingThread();
     
     public MainPanel(){
+
+        Trident.panel = this;
 
         System.setProperty("sun.java2d.opengl", "true"); // hardware acceleration?
 
@@ -102,6 +104,7 @@ public class MainPanel extends JPanel {
             if(key == KeyEvent.VK_F11){
                 Trident.fullscreen = !Trident.fullscreen;
                 Main.window = BTools.getWindowFullscreen(Main.window, Trident.fullscreen, panel);
+                Update.tridentEvent(Trident.EVENT_FULLSCREEN);
                 return;
             }
             if(!inIntro){

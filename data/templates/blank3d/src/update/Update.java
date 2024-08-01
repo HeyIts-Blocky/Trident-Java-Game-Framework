@@ -4,6 +4,7 @@ import trident.*;
 import trident.ent.*;
 import ent.*;
 import java.util.ArrayList;
+
 import blib.b3d.*;
 import blib.game.*;
 import blib.util.*;
@@ -79,15 +80,51 @@ public class Update {
     
     public static void update(long elapsedTime){
         if(Rend3D.enabled){
+            int mouseDelta = 0;
+            if(Trident.captureCursor){
+                int startX = Trident.panel.km.getMousePos().x;
+                Point p = new Point(Main.window.getWidth() / 2 + Main.window.getX(), Main.window.getHeight() / 2 + Main.window.getY());
+                mouseDelta = startX - Main.window.getWidth() / 2;
+                if(!Trident.getFullscreen()) mouseDelta += 8;
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice[] gs = ge.getScreenDevices();
+
+                // Search the devices for the one that draws the specified point.
+                for (GraphicsDevice device: gs) { 
+                    GraphicsConfiguration[] configurations =
+                        device.getConfigurations();
+                    
+
+                    boolean gtfo = false;
+                    for (GraphicsConfiguration config: configurations) {
+                        Rectangle bounds = config.getBounds();
+                        if(bounds.contains(p)) {
+                            // Set point to screen coordinates.
+
+                            try {
+                                Robot r = new Robot(device);
+                                r.mouseMove(p.x, p.y);
+                            } catch (AWTException e) {
+                                e.printStackTrace();
+                            }
+
+                            gtfo = true;
+                            break;
+                        }
+                    }
+
+                    if(gtfo) break;
+                }
+
+                Trident.panel.setCursor(BTools.getBlankCursor());
+            }else{
+                Trident.panel.setCursor(Cursor.getDefaultCursor());
+            }
 
             Trident.setPlrSpeed(0);
             if(HUD.currentDialog == null){ // only move when there's no dialog
-                if(Trident.getKeyDown(KeyEvent.VK_LEFT)){
-                    WallManager.camera.direction -= Math.toRadians(0.1) * elapsedTime;
-                }
-                if(Trident.getKeyDown(KeyEvent.VK_RIGHT)){
-                    WallManager.camera.direction += Math.toRadians(0.1) * elapsedTime;
-                }
+
+                if(Trident.captureCursor) WallManager.camera.direction += Math.toRadians(mouseDelta * 0.007) * elapsedTime;
         
                 Position startPos = Trident.getPlrPos().copy();
                 Point move = new Point();

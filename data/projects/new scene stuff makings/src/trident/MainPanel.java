@@ -102,6 +102,7 @@ public class MainPanel extends JPanel {
             if(key == KeyEvent.VK_F11){
                 Trident.fullscreen = !Trident.fullscreen;
                 Main.window = BTools.getWindowFullscreen(Main.window, Trident.fullscreen, panel);
+                Update.tridentEvent(Trident.EVENT_FULLSCREEN);
                 return;
             }
             if(!inIntro){

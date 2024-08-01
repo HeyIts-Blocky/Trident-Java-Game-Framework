@@ -35,13 +35,16 @@ public class Inputs {
                     }
                 }
             }
+            if(key == KeyEvent.VK_ESCAPE){
+                Trident.captureCursor = false;
+            }
             // if(key == KeyEvent.VK_DOWN) Rend3D.offset++;
             // if(key == KeyEvent.VK_UP) Rend3D.offset--;
         }
     }
 
     public static void mousePressed(int mb, Point mousePos, Position worldPos){
-
+        Trident.captureCursor = true;
     }
 
     public static void onScroll(int scroll){

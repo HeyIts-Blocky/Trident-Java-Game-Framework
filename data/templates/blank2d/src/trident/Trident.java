@@ -54,7 +54,7 @@ public class Trident {
     protected static String newSprite = null;
 
     // Trident events
-    public static final int EVENT_SCREENSHOT = 0;
+    public static final int EVENT_SCREENSHOT = 0, EVENT_FULLSCREEN = 1;
 
 
     // Setting methods
