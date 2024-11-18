@@ -569,12 +569,12 @@ public class MainPanel extends JPanel {
             if(saveTime < 0) saveTime = 0;
 
             if(tool == 1 && selectedEntity != null && km.getMouseDown(1)){
-                selectedEntity.position.x += delta.x;
-                selectedEntity.position.y += delta.y;
+                selectedEntity.position.x += delta.x * cam.getZoom();
+                selectedEntity.position.y += delta.y * cam.getZoom();
 
                 
-                selectedEntity.position.x += dir.x * server.getElapsedTime() * speed;
-                selectedEntity.position.y += dir.y * server.getElapsedTime() * speed;
+                selectedEntity.position.x += dir.x * server.getElapsedTime() * speed * cam.getZoom();
+                selectedEntity.position.y += dir.y * server.getElapsedTime() * speed * cam.getZoom();
             }
             if(tool == 2 && selectedEntity != null && km.getMouseDown(1)){
                 if(selectedEntity instanceof project.ent.Light){
